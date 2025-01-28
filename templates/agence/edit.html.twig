@@ -1,0 +1,31 @@
+{# templates/agence/edit.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier l'agence{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Modifier l'agence {{ agence.numero }}</h1>
+
+    {{ form_start(form, {'attr': {'class': 'max-w-lg'}}) }}
+        <div class="space-y-4">
+            {{ form_row(form.Adresse, {
+                'attr': {'class': 'w-full px-3 py-2 border rounded'}
+            }) }}
+            {{ form_row(form.Telephone, {
+                'attr': {'class': 'w-full px-3 py-2 border rounded'}
+            }) }}
+            
+            <div class="flex gap-4">
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    Enregistrer
+                </button>
+                <a href="{{ path('app_agences_index') }}" 
+                   class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+                    Retour
+                </a>
+            </div>
+        </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

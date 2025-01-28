@@ -1,0 +1,40 @@
+{# templates/pagination/tailwind_pagination.html.twig #}
+{% if pageCount > 1 %}
+    <div class="flex justify-center space-x-1">
+        {% if first is defined and current != first %}
+            <a href="{{ path(route, query|merge({(pageParameterName): first})) }}" class="px-4 py-2 text-gray-700 bg-white border rounded-lg hover:bg-gray-100">
+                «
+            </a>
+        {% endif %}
+
+        {% if previous is defined %}
+            <a href="{{ path(route, query|merge({(pageParameterName): previous})) }}" class="px-4 py-2 text-gray-700 bg-white border rounded-lg hover:bg-gray-100">
+                ‹
+            </a>
+        {% endif %}
+
+        {% for page in pagesInRange %}
+            {% if page != current %}
+                <a href="{{ path(route, query|merge({(pageParameterName): page})) }}" class="px-4 py-2 text-gray-700 bg-white border rounded-lg hover:bg-gray-100">
+                    {{ page }}
+                </a>
+            {% else %}
+                <span class="px-4 py-2 text-white bg-blue-500 border border-blue-500 rounded-lg">
+                    {{ page }}
+                </span>
+            {% endif %}
+        {% endfor %}
+
+        {% if next is defined %}
+            <a href="{{ path(route, query|merge({(pageParameterName): next})) }}" class="px-4 py-2 text-gray-700 bg-white border rounded-lg hover:bg-gray-100">
+                ›
+            </a>
+        {% endif %}
+
+        {% if last is defined and current != last %}
+            <a href="{{ path(route, query|merge({(pageParameterName): last})) }}" class="px-4 py-2 text-gray-700 bg-white border rounded-lg hover:bg-gray-100">
+                »
+            </a>
+        {% endif %}
+    </div>
+{% endif %}
