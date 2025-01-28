@@ -102,4 +102,11 @@ class AgenceController extends AbstractController
             'pagination' => $pagination
         ]);
     }
+    #[Route('/agence/{id}/details', name: 'app_agence_details')]
+public function details(Agences $agence): Response
+{
+    return $this->render('agence/details.html.twig', [
+        'agence' => $agence
+    ]);
+}
 }
