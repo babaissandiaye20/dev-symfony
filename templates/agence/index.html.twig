@@ -15,18 +15,34 @@
         <div class="flex space-x-4 mb-6">
             {# Form section #}
             {{ form_start(form, {'attr': {'class': 'flex-grow flex space-x-4'}}) }}
-                {{ form_widget(form.Telephone, {
-                    'attr': {
-                        'class': 'flex-1 p-2 border rounded',
-                        'placeholder': 'Téléphone'
-                    }
-                }) }}
-                {{ form_widget(form.Adresse, {
-                    'attr': {
-                        'class': 'flex-1 p-2 border rounded',
-                        'placeholder': 'Adresse'
-                    }
-                }) }}
+                <div class="flex-1 relative">
+                    {{ form_widget(form.Telephone, {
+                        'attr': {
+                            'class': 'w-full p-2 border rounded' ~ (form.Telephone.vars.valid ? '' : ' border-red-500'),
+                            'placeholder': 'Téléphone'
+                        }
+                    }) }}
+                    {% if not form.Telephone.vars.valid %}
+                        <div class="absolute -bottom-6 left-0 text-red-500 text-sm">
+                            {{ form_errors(form.Telephone) }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="flex-1 relative">
+                    {{ form_widget(form.Adresse, {
+                        'attr': {
+                            'class': 'w-full p-2 border rounded' ~ (form.Adresse.vars.valid ? '' : ' border-red-500'),
+                            'placeholder': 'Adresse'
+                        }
+                    }) }}
+                    {% if not form.Adresse.vars.valid %}
+                        <div class="absolute -bottom-6 left-0 text-red-500 text-sm">
+                            {{ form_errors(form.Adresse) }}
+                        </div>
+                    {% endif %}
+                </div>
+
                 <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
                     {{ editMode ? 'Modifier' : 'Enregistrer' }}
                 </button>
@@ -71,8 +87,9 @@
                                 </a>
                                 <form action="{{ path('app_agence_delete', {id: agence.id}) }}" method="post" class="inline">
                                     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ agence.id) }}">
-                                    <button type="submit" class="px-4 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette agence ?')">
+                                    <button type="button" 
+                                            onclick="openDeleteModal({{ agence.id }})"
+                                            class="px-4 py-1 bg-red-500 text-white rounded hover:bg-red-600">
                                         Supprimer
                                     </button>
                                 </form>
@@ -88,4 +105,65 @@
         </div>
     </div>
 </div>
+
+{# Modal de confirmation de suppression #}
+<div id="deleteModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+            </div>
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4">Confirmation de suppression</h3>
+            <div class="mt-2 px-7 py-3">
+                <p class="text-sm text-gray-500">
+                    Êtes-vous sûr de vouloir supprimer cette agence ? Cette action est irréversible.
+                </p>
+            </div>
+            <div class="flex justify-center mt-4 space-x-4">
+                <button onclick="closeDeleteModal()" 
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
+                    Annuler
+                </button>
+                <button id="confirmDelete" 
+                        class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                    Confirmer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentForm = null;
+
+function openDeleteModal(agenceId) {
+    const modal = document.getElementById('deleteModal');
+    modal.classList.remove('hidden');
+    
+    // Trouve le formulaire correspondant à l'agence
+    currentForm = document.querySelector(`form[action*="/agence/${agenceId}"]`);
+    
+    // Configure le bouton de confirmation
+    document.getElementById('confirmDelete').onclick = function() {
+        if (currentForm) {
+            currentForm.submit();
+        }
+    };
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById('deleteModal');
+    modal.classList.add('hidden');
+    currentForm = null;
+}
+
+// Ferme la modal si on clique en dehors
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeDeleteModal();
+    }
+});
+</script>
 {% endblock %}
